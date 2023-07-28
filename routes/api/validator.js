@@ -1,9 +1,7 @@
 const Joi = require('joi')
 
 const validator = (schema) => (payload) => {
-  console.log('Input payload:', payload);
   const validationResult = schema.validate(payload, { abortEarly: false });
-  console.log('Validation Result:', validationResult);
   return validationResult;
 };
 

@@ -115,7 +115,6 @@ router.put('/:contactId', async (req, res, next) => {
       return req.status(400).json({ "message": "missing fields" });
     } else {
       const result = await contactsFuncs.updateContact(contactId, contactUpdateData);
-      console.log(result)
       const { error, message, updatedContact } = result;
       if (error) {
         return next(error);
