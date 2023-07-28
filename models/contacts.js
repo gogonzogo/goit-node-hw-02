@@ -1,6 +1,12 @@
 const fs = require('fs').promises;
 const path = require('node:path');
+const { validateContactData } = require('../routes/api/validator');
 const contactsPath = path.join(__dirname, 'contacts.json');
+const CONTACT_ADDED_MESSAGE = 'Contact added successfully';
+const CONTACT_DELETED_MESSAGE = 'Contact deleted successfully';
+const CONTACT_UPDATED_MESSAGE = 'Contact updated successfully';
+const CONTACT_NOT_FOUND_MESSAGE = 'Contact not found';
+const CONTACT_ALREADY_EXISTS_MESSAGE = 'Contact details already exists';
 
 async function readContacts() {
   try {
@@ -14,10 +20,10 @@ async function readContacts() {
 async function listContacts() {
   try {
     const contactsData = await readContacts();
-    return contactsData;
+    return { contactsData };
   } catch (error) {
     return { error };
-  };
+  }
 };
 
 async function getContactById(contactId) {
@@ -25,11 +31,9 @@ async function getContactById(contactId) {
     const contactsData = await readContacts();
     const contact = contactsData.find(contact => contact.id === contactId);
     if (!contact) {
-      const message = `Not Found`;
-      return { message };
-    } else {
-      return { contact };
+      return { message: CONTACT_NOT_FOUND_MESSAGE };
     }
+    return { contact };
   } catch (error) {
     return { error };
   }
@@ -38,19 +42,21 @@ async function getContactById(contactId) {
 async function addContact(newContact) {
   try {
     const contactsData = await readContacts();
-    const contactExists = contactsData.find(contact =>
+    validateContactData(newContact);
+    const contactExists = contactsData.some(contact =>
       contact.name.toLowerCase() === newContact.name.toLowerCase() ||
       contact.email.toLowerCase() === newContact.email.toLowerCase() ||
       contact.phone === newContact.phone
     );
-
     if (contactExists) {
-      const message = `Contact already exists`;
-      return { message };
+      return { message: CONTACT_ALREADY_EXISTS_MESSAGE };
     } else {
       contactsData.push(newContact);
       await fs.writeFile(contactsPath, JSON.stringify(contactsData))
-      const addedContact = { [newContact.id]: newContact };
+      const addedContact = {
+        message: CONTACT_ADDED_MESSAGE,
+        [newContact.id]: newContact
+      };
       return { addedContact };
     };
   }
@@ -68,11 +74,9 @@ async function removeContact(contactId) {
         contact => contact.id !== contactId
       );
       await fs.writeFile(contactsPath, JSON.stringify(updatedContactsData));
-      const contactDeleted = 'contact deleted';
-      return { contactDeleted };
+      return { contactDeleted: CONTACT_DELETED_MESSAGE };
     } else {
-      const contactNotFound = 'Not found';
-      return { contactNotFound };
+      return { contactNotFound: CONTACT_NOT_FOUND_MESSAGE };
     }
   } catch (error) {
     return { error };
@@ -82,48 +86,39 @@ async function removeContact(contactId) {
 async function updateContact(contactId, updateData) {
   try {
     const contactsData = await readContacts();
-    const existingContact = contactsData.find((contact) => contact.id === contactId);
-
-    if (!existingContact) {
-      return { message: 'Contact not found' };
-    };
-
-    const { name, email, phone } = updateData;
-    let contactExists = false;
-
-    if (name || email || phone) {
-      contactExists = contactsData.some((contact) => {
-        return (
-          contact.id !== contactId &&
-          ((!name || contact.name.toLowerCase() === name.toLowerCase()) &&
-            (!email || contact.email.toLowerCase() === email.toLowerCase()) &&
-            (!phone || contact.phone === phone))
-        );
-      });
-    };
-
-    if (contactExists) {
-      return { message: 'Contact name, number or email already exists' };
-    } else {
-      const updatedContactsData = contactsData.map((contact) => {
-        if (contact.id === contactId) {
-          return {
-            ...contact,
-            name: name || contact.name,
-            email: email || contact.email,
-            phone: phone || contact.phone,
-          };
-        } else {
-          return contact;
-        };
-      });
-      await fs.writeFile(contactsPath, JSON.stringify(updatedContactsData));
-      const updatedContact = updatedContactsData.find((contact) => contact.id === contactId);
-      return { updatedContact };
+    const index = contactsData.findIndex((contact) => contact.id === contactId);
+    if (index === -1) {
+      return { message: CONTACT_NOT_FOUND_MESSAGE };
     }
-  } catch (error) {
+    const { name, email, phone } = updateData;
+    const contactExists = contactsData.some(contact =>
+      contact.id !== contactId &&
+      (
+        (name && contact.name.toLowerCase() === name.toLowerCase()) ||
+        (email && contact.email.toLowerCase() === email.toLowerCase()) ||
+        (phone && contact.phone === phone)
+      )
+    );
+    if (contactExists) {
+      return { message: CONTACT_ALREADY_EXISTS_MESSAGE };
+    }
+    const updatedContact = {
+      ...contactsData[index],
+      name: name || contactsData[index].name,
+      email: email || contactsData[index].email,
+      phone: phone || contactsData[index].phone,
+    };
+    contactsData[index] = updatedContact;
+    await fs.writeFile(contactsPath, JSON.stringify(contactsData));
+    const successfulUpdate = {
+      message: CONTACT_UPDATED_MESSAGE,
+      [updatedContact.id]: updatedContact,
+    }
+    return { successfulUpdate };
+  }
+  catch (error) {
     return { error };
-  };
+  }
 };
 
 module.exports = {
