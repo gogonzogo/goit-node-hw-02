@@ -1,14 +1,15 @@
-const Contacts = require('../../schemas/contactsSchema')
+const { contacts: service } = require('../../services');
 
-const addContact = async (req, res, next) => {
-  await Contacts.deleteOne({ _id: req.params.id });
-  res.json({
-    status: "sucess",
+const removeContact = async (req, res) => {
+  const result = await service.removeContact(req);
+  res.status(200).json({
+    status: 'success',
     code: 200,
     data: {
       message: `Contact ${req.params.id} removed!`,
+      result,
     },
   });
 };
 
-module.exports = addContact;
+module.exports = removeContact;

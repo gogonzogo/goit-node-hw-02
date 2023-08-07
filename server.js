@@ -1,20 +1,15 @@
-const express = require('express');
-const db = require('./config/contactsConfig');
-const routes = require('./routes/api/contactsRoutes');
-const app = express();
-const cors = require('cors');
-const PORT = process.env.PORT || 3000;
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(cors());
-app.use('/api/contacts', routes);
+const mongoose = require('mongoose');
+const app = require('./app');
+const { DB_HOST, PORT = 3000 } = process.env;
 
-db.once('open', () => {
-  try {
+mongoose
+  .connect(DB_HOST)
+  .then(() => {
     app.listen(PORT, () => {
-      console.log("Database connection successful");
+      console.log('Database connection successful');
     });
-  } catch (error) {
-    console.log(error)
-  }
-});
+  })
+  .catch((error) => {
+    console.log(error.message);
+    process.exit(1);
+  });

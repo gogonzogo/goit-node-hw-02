@@ -1,21 +1,16 @@
-const Contacts = require('../../schemas/contactsSchema')
+const { contacts: service } = require('../../services');
 
-const addContact = async (req, res, next) => {
-  const update = await Contacts.updateOne(
-    { _id: req.params.id },
-    { $set: req.body },
-    { new: true });
-  const updatedContact = await Contacts.findOne({ _id: req.params.id });
-  res.json({
-    status: "sucess",
+const updateContact = async (req, res) => {
+  const result = await service.updateContact(req);
+  res.status(200).json({
+    status: 'success',
     code: 200,
     data: {
-      result: {
-        update,
-        updatedContact,
-      }
+      message: `Contact ${req.params.id} updated!`,
+      result,
     },
   });
 };
 
-module.exports = addContact;
+module.exports = updateContact;
+

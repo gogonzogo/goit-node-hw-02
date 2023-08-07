@@ -1,12 +1,12 @@
-const Contacts = require('../../schemas/contactsSchema')
+const { contacts: service } = require('../../services');
 
-const addContact = async (req, res, next) => {
-  const newContact = await Contacts.create(req.body);
-  res.json({
-    status: "sucess",
+const addContact = async (req, res) => {
+  const result = await service.addContact(req.body);
+  res.status(201).json({
+    status: 'success',
     code: 201,
     data: {
-      results: newContact,
+      result,
     },
   });
 };

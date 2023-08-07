@@ -1,12 +1,12 @@
-const Contacts = require('../../schemas/contactsSchema')
+const { contacts: service } = require('../../services');
 
-const getContactById = async (req, res, next) => {
-  const contact = await Contacts.findOne({ _id: req.params.id });
-  res.json({
-    status: "sucess",
+const getContactById = async (req, res) => {
+  const result = await service.getContactById(req);
+  res.status(200).json({
+    status: 'success',
     code: 200,
     data: {
-      results: contact,
+      result,
     },
   });
 };
