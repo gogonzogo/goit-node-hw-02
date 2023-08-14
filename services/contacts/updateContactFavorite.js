@@ -3,7 +3,6 @@ const { Contact } = require('../../models');
 const updateContactFavorite = async (req) => {
   try {
     const { favorite } = req.body
-    console.log(favorite)
     if (!favorite) {
       return 'no favorite'
     }

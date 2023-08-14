@@ -22,9 +22,9 @@ const userLogin = async (req, res) => {
     });
     return;
   }
-  res.status(201).json({
+  res.status(200).json({
     status: 'Success',
-    code: 201,
+    code: 200,
     data: {
       user: {
         email: result.email,

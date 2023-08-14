@@ -5,7 +5,6 @@ const getFavoriteContacts = async (req) => {
     const user = req.session.userId;
     const favorite = req.query.favorite;
     const totalContacts = await Contact.countDocuments({ owner: user });
-    console.log(`favorite, ${favorite}`)
     if (totalContacts < 1) {
       return "Not Found";
     };

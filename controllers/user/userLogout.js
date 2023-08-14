@@ -2,7 +2,6 @@ const { user: service } = require('../../services');
 
 const userLogout = async (req, res) => {
   const result = await service.userLogout(req);
-  console.log(result)
   if (!result) {
     res.status(401).json({
       data: {
