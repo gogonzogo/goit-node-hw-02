@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 const Joi = require('joi');
 
-const contactsSchema = Schema(
+const contactsSchema = new Schema(
   {
     name: {
       type: String,
@@ -9,16 +9,22 @@ const contactsSchema = Schema(
     },
     email: {
       type: String,
+      unique: true,
       required: [true, "Email field is missing"],
     },
     phone: {
       type: String,
+      unique: true,
       required: [true, "Phone field is missing"],
     },
     favorite: {
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+    }
   },
   { versionKey: false, timestamps: true }
 );

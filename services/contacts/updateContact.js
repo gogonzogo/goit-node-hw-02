@@ -1,9 +1,9 @@
 const { Contact } = require('../../models');
 
-const updateContact = async (req, body) => {
+const updateContact = async (req) => {
   try {
     const data = await Contact.updateOne(
-      { _id: req.params.id },
+      { _id: req.params.id, owner: req.session.userId },
       { $set: req.body },
       { new: true }
     );

@@ -1,9 +1,13 @@
 const { Contact } = require('../../models');
 
-const getAllContacts = async () => {
+const getAllContacts = async (req) => {
   try {
-    const data = await Contact.find({});
-    return data;
+    const contacts = await Contact.find({ owner: req.session.userId });
+    const totalContacts = await Contact.countDocuments({owner: req.session.userId});
+    return {
+      contacts,
+      totalContacts,
+    };
   } catch (error) {
     console.log(error.message)
   }
