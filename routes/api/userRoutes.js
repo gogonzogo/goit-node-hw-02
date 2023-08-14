@@ -7,7 +7,7 @@ userRouter.route('/users/signup').post(validation(joiUserSchema), ctrlWrapper(ct
 userRouter.route('/users/login').post(ctrlWrapper(ctrl.userLogin))
 userRouter.route('/users/logout').post(authorizeUser, ctrlWrapper(ctrl.userLogout))
 userRouter.route('/users/current').post(authorizeUser, ctrlWrapper(ctrl.userCurrent))
-userRouter.route('/users/subscription')
+userRouter.route('/users')
   .patch(authorizeUser, validation(subscriptionSchema), ctrlWrapper(ctrl.userSubscriptionUpdate));
 
 module.exports = userRouter;
