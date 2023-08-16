@@ -1,6 +1,7 @@
 const { User } = require('../../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
 
 const userSignup = async (req) => {
   try {
@@ -13,9 +14,11 @@ const userSignup = async (req) => {
     const token = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
+    const userAvatar = gravatar.profile_url(email, { protocol: 'https' });
     const newUser = await User.create({
       email: email,
       password: hashedPassword,
+      avatarURL: userAvatar,
     });
     req.session.userToken = token;
     req.session.userId = newUser._id;

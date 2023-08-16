@@ -1,7 +1,7 @@
 const contactsRouter = require('express').Router();
 const { contacts: ctrl } = require('../../controllers');
 const { validation, ctrlWrapper, authorizeUser } = require('../../middlewares');
-const { joiSchema } = require('../../models/contacts')
+const { joiSchema, joiFavoriteSchema } = require('../../models')
 
 contactsRouter.route('/contacts')
   .get(authorizeUser, (req, res, next) => {
@@ -11,7 +11,7 @@ contactsRouter.route('/contacts')
     } else if (page && limit) {
       return ctrlWrapper(ctrl.getSomeContacts)(req, res, next);
     } else {
-      return ctrlWrapper(ctrl.getAllContacts)(req, res, next); // Fallback to getAllContacts
+      return ctrlWrapper(ctrl.getAllContacts)(req, res, next);
     }
   })
   .post(authorizeUser, validation(joiSchema), ctrlWrapper(ctrl.addContact));
@@ -20,6 +20,6 @@ contactsRouter.route('/contacts/:id')
   .delete(authorizeUser, ctrlWrapper(ctrl.removeContact))
   .put(authorizeUser, validation(joiSchema), ctrlWrapper(ctrl.updateContact));
 contactsRouter.route('/contacts/:id/favorite')
-  .patch(authorizeUser, ctrlWrapper(ctrl.updateContactFavorite));
+  .patch(authorizeUser, validation(joiFavoriteSchema), ctrlWrapper(ctrl.updateContactFavorite));
 
 module.exports = contactsRouter;

@@ -32,6 +32,16 @@ const getFavoriteContacts = async (req, res) => {
     });
     return;
   };
+  if (result === "Bad Request") {
+    res.status(400).json({
+      status: "Bad Request",
+      code: 400,
+      data: {
+        message: 'Boolean value expected.',
+      }
+    });
+    return;
+  };
   res.status(200).json({
     status: "Success",
     code: 200,

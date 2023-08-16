@@ -1,22 +1,11 @@
 const express = require('express');
-const session = require('express-session');
+const { session, sess } = require('./middlewares');
 const logger = require('morgan');
 const cors = require('cors');
-require(`dotenv`).config();
 const { contactsRouter, userRouter } = require('./routes/api');
 const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-const sess = {
-  secret: process.env.JWT_SECRET,
-  cookie: {
-    maxAge: 600000,
-    httpOnly: true,
-    secure: false,
-    sameSite: 'strict',
-  },
-  resave: false,
-  saveUninitialized: true,
-};
+app.use(express.static('public'))
 app.use(session(sess));
 app.use(logger(formatsLogger));
 app.use(cors());

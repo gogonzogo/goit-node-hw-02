@@ -2,8 +2,11 @@ const { Contact } = require('../../models');
 
 const getFavoriteContacts = async (req) => {
   try {
-    const user = req.session.userId;
     const favorite = req.query.favorite;
+    if (favorite !== 'true' && favorite !== 'false') {
+      return 'Bad Request';
+    };
+    const user = req.session.userId;
     const totalContacts = await Contact.countDocuments({ owner: user });
     if (totalContacts < 1) {
       return "Not Found";
