@@ -11,7 +11,7 @@ contactsRouter.route('/contacts')
     } else if (page && limit) {
       return ctrlWrapper(ctrl.getSomeContacts)(req, res, next);
     } else {
-      return ctrlWrapper(ctrl.getAllContacts)(req, res, next); // Fallback to getAllContacts
+      return ctrlWrapper(ctrl.getAllContacts)(req, res, next);
     }
   })
   .post(authorizeUser, validation(joiSchema), ctrlWrapper(ctrl.addContact));
