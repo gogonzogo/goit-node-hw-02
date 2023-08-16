@@ -7,7 +7,7 @@ const userAvatarUpdate = async (req) => {
   const user = await User.findById(req.session.userId);
   const { path: temporaryName } = req.file;
   console.log(temporaryName)
-  const avatarStorage = path.join(process.cwd(), 'public');
+  const avatarStorage = path.join(process.cwd(), 'public/avatars');
   const fileName = path.join(avatarStorage, user.email + '.jpg');
   try {
     await Jimp.read(temporaryName)
