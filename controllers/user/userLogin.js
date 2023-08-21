@@ -2,6 +2,16 @@ const { user: service } = require('../../services');
 
 const userLogin = async (req, res) => {
   const result = await service.userLogin(req);
+  if (result === 'no credintials') {
+    res.status(400).json({
+      status: 'Bad Request',
+      code: 400,
+      data: {
+        message: 'Email and or password is missing!',
+      },
+    });
+    return;
+  }
   if (result === 'email') {
     res.status(409).json({
       status: 'Conflict',
@@ -14,7 +24,7 @@ const userLogin = async (req, res) => {
   }
   if (result === 'password') {
     res.status(401).json({
-      status: 'Unathorized',
+      status: 'Unauthorized',
       code: 401,
       data: {
         message: 'Email or password is wrong',

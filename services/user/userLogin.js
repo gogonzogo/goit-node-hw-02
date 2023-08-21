@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const userLogin = async (req) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      return 'no credintials'
+    }
     const user = await User.findOne({ email: email });
     if (!user) {
       return 'email';
@@ -17,6 +20,7 @@ const userLogin = async (req) => {
     });
     req.session.userToken = token;
     req.session.userId = user._id;
+    console.log(user)
     return user;
   } catch (error) {
     console.log(error);
